@@ -6,112 +6,112 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $products = Product::with('category')->get();
-        return view('products.index', compact('products'));
+        $categories = Category::all();
+        return view('products.index', compact('products', 'categories'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $categories = Category::all();
         return view('products.create', compact('categories'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Validate the request
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|max:2048', // Max 2MB
+            'image' => 'required|image|max:2048', // Required image upload (max 2MB)
             'is_active' => 'boolean',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // Handle the image upload
+        $validated['image_path'] = $request->file('image')->store('products', 'public');
+        
+        // Set is_active value
+        $validated['is_active'] = $request->has('is_active');
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-        }
-
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'category_id' => $request->category_id,
-            'image_path' => $imagePath,
-            'is_active' => $request->has('is_active'),
-        ]);
+        // Create new product
+        Product::create($validated);
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully.');
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(Product $product)
     {
         return view('products.show', compact('product'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Product $product)
     {
         $categories = Category::all();
         return view('products.edit', compact('product', 'categories'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Product $product)
     {
-        $validator = Validator::make($request->all(), [
+        // Validate the request
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|max:2048', // Max 2MB
+            'image' => $product->image_path ? 'nullable|image|max:2048' : 'required|image|max:2048', // Required only if no existing image
             'is_active' => 'boolean',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
+        // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($product->image_path) {
-                Storage::disk('public')->delete($product->image_path);
-            }
-            $imagePath = $request->file('image')->store('products', 'public');
-        } else {
-            $imagePath = $product->image_path;
+            // Delete the old image
+            Storage::disk('public')->delete($product->image_path);
+            
+            // Store the new image
+            $validated['image_path'] = $request->file('image')->store('products', 'public');
         }
+        
+        // Set is_active value
+        $validated['is_active'] = $request->has('is_active');
 
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'category_id' => $request->category_id,
-            'image_path' => $imagePath,
-            'is_active' => $request->has('is_active'),
-        ]);
+        // Update the product
+        $product->update($validated);
 
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Product $product)
     {
         // Check if product is used in any transaction
@@ -122,10 +122,8 @@ class ProductController extends Controller
                 ->with('error', 'Cannot delete product as it is used in transactions.');
         }
         
-        // Delete image if exists
-        if ($product->image_path) {
-            Storage::disk('public')->delete($product->image_path);
-        }
+        // Delete image
+        Storage::disk('public')->delete($product->image_path);
         
         $product->delete();
         

@@ -93,24 +93,39 @@
                 >{{ old('description', $product->description) }}</textarea>
             </div>
             
-            <!-- Image upload -->
+            <!-- Image upload - Simplified -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
-                <div class="mt-1 flex items-center">
-                    <label for="image" class="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
-                        @if($product->image_path)
-                            <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" class="h-32 object-contain">
-                            <p class="mt-2 text-xs text-blue-500">Click to change</p>
-                        @else
-                            <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p class="mt-1 text-sm text-gray-500">Click to upload image</p>
-                        @endif
-                        <input id="image" name="image" type="file" class="hidden" accept="image/*">
-                    </label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Current Product Image</label>
+                
+                <!-- Current image preview -->
+                <div class="mb-3">
+                    <div class="border border-gray-200 rounded p-2 bg-gray-50">
+                        <img 
+                            src="{{ asset('storage/' . $product->image_path) }}" 
+                            alt="{{ $product->name }}" 
+                            class="h-40 mx-auto object-contain"
+                            onerror="this.onerror=null; this.src='{{ asset('images/no-image.png') }}';"
+                        >
+                    </div>
                 </div>
-                <p class="mt-2 text-xs text-gray-500">Recommended: 600x600px JPG or PNG</p>
+                
+                <!-- New image upload -->
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Change image:</label>
+                    <input 
+                        type="file" 
+                        name="image" 
+                        id="image" 
+                        class="w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-medium
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100"
+                        accept="image/*"
+                    >
+                    <p class="mt-1 text-xs text-gray-500">Leave empty to keep current image. JPG, PNG or GIF (Max. 2MB)</p>
+                </div>
             </div>
             
             <!-- Active status -->
@@ -130,61 +145,34 @@
         </div>
         
         <div class="mt-6 flex items-center justify-between">
-            <!-- Delete product button -->
-            <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');" class="inline">
+            <!-- Delete button telah dipisahkan, bukan dalam form update -->
+            <a href="{{ route('products.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500">
+                Cancel
+            </a>
+            <button 
+                type="submit" 
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+            >
+                Update Product
+            </button>
+        </div>
+    </form>
+    
+    <!-- Form delete HARUS terpisah dari form update -->
+    <div class="border-t border-gray-200 mt-6 pt-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h3 class="text-sm font-medium text-gray-700">Danger Zone</h3>
+                <p class="text-xs text-gray-500">Once deleted, this product cannot be recovered</p>
+            </div>
+            <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product? This action cannot be undone.');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-500 hover:text-white transition-colors">
-                    Delete
+                    Delete Product
                 </button>
             </form>
-            
-            <div>
-                <a href="{{ route('products.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 mr-2">
-                    Cancel
-                </a>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
-                    Update Product
-                </button>
-            </div>
         </div>
-    </form>
+    </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    // Preview uploaded image
-    const imageInput = document.getElementById('image');
-    const imageLabel = imageInput.parentElement;
-    
-    imageInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                // Remove existing content
-                while (imageLabel.firstChild) {
-                    imageLabel.removeChild(imageLabel.firstChild);
-                }
-                
-                // Create preview image
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.classList.add('h-32', 'object-contain');
-                
-                // Add "Change" text
-                const changeText = document.createElement('p');
-                changeText.textContent = 'Click to change';
-                changeText.classList.add('mt-2', 'text-xs', 'text-blue-500');
-                
-                // Append to label
-                imageLabel.appendChild(img);
-                imageLabel.appendChild(changeText);
-            };
-            
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-</script>
-@endpush

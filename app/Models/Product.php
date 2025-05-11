@@ -14,7 +14,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
-        'image_path',
+        'image_path', // Now required
         'category_id',
         'is_active',
     ];

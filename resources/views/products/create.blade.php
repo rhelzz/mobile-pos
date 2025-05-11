@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
         @csrf
         
         @if ($errors->any())
@@ -92,19 +92,34 @@
                 >{{ old('description') }}</textarea>
             </div>
             
-            <!-- Image upload -->
+            <!-- Image upload - Improved to ensure reliability -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
-                <div class="mt-1 flex items-center">
-                    <label for="image" class="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
-                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <p class="mt-1 text-sm text-gray-500">Click to upload image</p>
-                        <input id="image" name="image" type="file" class="hidden" accept="image/*">
-                    </label>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Product Image *</label>
+                <div class="mt-1">
+                    <input 
+                        type="file" 
+                        name="image" 
+                        id="image" 
+                        class="w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-medium
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100"
+                        accept="image/*"
+                        required
+                    >
                 </div>
-                <p class="mt-2 text-xs text-gray-500">Recommended: 600x600px JPG or PNG</p>
+                <div id="imagePreview" class="mt-2 hidden">
+                    <img id="previewImg" src="#" alt="Preview" class="h-32 object-contain border border-gray-200 rounded p-2">
+                    <button type="button" id="removeImage" class="mt-2 text-xs text-red-500 hover:text-red-700">
+                        Remove image
+                    </button>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Required: JPG, PNG or GIF (Max. 2MB)</p>
+                <div id="imageError" class="text-red-600 text-xs mt-1 hidden">
+                    Please select an image file
+                </div>
             </div>
             
             <!-- Active status -->
@@ -127,7 +142,11 @@
             <a href="{{ route('products.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500 mr-2">
                 Cancel
             </a>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+            <button 
+                type="submit" 
+                id="saveButton"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+            >
                 Save Product
             </button>
         </div>
@@ -137,37 +156,78 @@
 
 @push('scripts')
 <script>
-    // Preview uploaded image
-    const imageInput = document.getElementById('image');
-    const imageLabel = imageInput.parentElement;
-    
-    imageInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
+    // Improved image handling script
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const removeButton = document.getElementById('removeImage');
+        const imageError = document.getElementById('imageError');
+        const form = document.getElementById('productForm');
+        const saveButton = document.getElementById('saveButton');
+        
+        // Preview image when selected
+        imageInput.addEventListener('change', function() {
+            // Reset error message
+            imageError.classList.add('hidden');
             
-            reader.onload = function(e) {
-                // Remove existing SVG and text
-                while (imageLabel.firstChild) {
-                    imageLabel.removeChild(imageLabel.firstChild);
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Validate file is an image
+                if (!file.type.match('image.*')) {
+                    imageError.textContent = 'Please select an image file (JPEG, PNG, GIF)';
+                    imageError.classList.remove('hidden');
+                    imagePreview.classList.add('hidden');
+                    return;
                 }
                 
-                // Create preview image
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.classList.add('h-32', 'object-contain');
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    imageError.textContent = 'Image must be less than 2MB';
+                    imageError.classList.remove('hidden');
+                    imagePreview.classList.add('hidden');
+                    return;
+                }
                 
-                // Add "Change" text
-                const changeText = document.createElement('p');
-                changeText.textContent = 'Click to change';
-                changeText.classList.add('mt-2', 'text-xs', 'text-blue-500');
+                const reader = new FileReader();
                 
-                // Append to label
-                imageLabel.appendChild(img);
-                imageLabel.appendChild(changeText);
-            };
-            
-            reader.readAsDataURL(this.files[0]);
-        }
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.classList.add('hidden');
+            }
+        });
+        
+        // Remove selected image
+        removeButton.addEventListener('click', function() {
+            imageInput.value = '';
+            imagePreview.classList.add('hidden');
+            imageInput.focus();
+        });
+        
+        // Form submission validation
+        form.addEventListener('submit', function(e) {
+            if (!imageInput.files || !imageInput.files[0]) {
+                e.preventDefault();
+                imageError.textContent = 'Please select an image file';
+                imageError.classList.remove('hidden');
+                imageInput.focus();
+            }
+        });
+        
+        // Prevent double submission
+        saveButton.addEventListener('click', function() {
+            if (form.checkValidity()) {
+                this.disabled = true;
+                this.textContent = 'Saving...';
+                form.submit();
+            }
+        });
     });
 </script>
 @endpush
