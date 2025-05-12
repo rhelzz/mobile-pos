@@ -12,9 +12,11 @@ class Transaction extends Model
     protected $fillable = [
         'invoice_number',
         'user_id',
+        'customer_name', // Tambahkan field ini
         'total_amount',
         'tax_amount',
         'discount_amount',
+        'discount_percent',
         'final_amount',
         'payment_method',
         'notes',

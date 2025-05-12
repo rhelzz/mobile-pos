@@ -524,6 +524,16 @@
                 <span class="text-blue-600" x-text="formatCurrency(calculateTotal())"></span>
             </div>
 
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pelanggan (Opsional)</label>
+                <input 
+                    type="text" 
+                    x-model="customerName" 
+                    placeholder="Masukkan nama pelanggan" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+            </div>
+
             <!-- Payment Method Selection -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
@@ -611,6 +621,14 @@
                         <span class="text-gray-600">Invoice:</span>
                         <span class="font-medium text-right" x-text="lastTransaction.invoice_number"></span>
                         
+                        <!-- Tambahkan baris untuk nama pelanggan jika ada -->
+                        <template x-if="lastTransaction.customer_name">
+                            <div class="contents">
+                                <span class="text-gray-600">Pelanggan:</span>
+                                <span class="font-medium text-right" x-text="lastTransaction.customer_name"></span>
+                            </div>
+                        </template>
+                        
                         <span class="text-gray-600">Payment:</span>
                         <span class="font-medium capitalize text-right" x-text="lastTransaction.payment_method"></span>
                         
@@ -660,6 +678,7 @@ function cashier() {
             taxRate: '10', // Default tax rate (as string for select binding)
             discountPercent: '0' // Default discount percent (as string for select binding)
         },
+        customerName: '',
         showCart: false,
         isProcessing: false,
         showSuccessModal: false,
@@ -882,6 +901,7 @@ function cashier() {
                             id: item.id,
                             quantity: item.quantity
                         })),
+                        customer_name: this.customerName, // Tambahkan customer_name ke data yang dikirim
                         payment_method: this.paymentMethod,
                         tax_percent: parseFloat(this.cart.taxRate),
                         discount_percent: parseFloat(this.cart.discountPercent),
@@ -895,6 +915,7 @@ function cashier() {
                     this.lastTransaction = result.transaction;
                     this.showSuccessModal = true;
                     this.clearCart();
+                    this.customerName = ''; // Reset customer name setelah checkout
                 } else {
                     alert('Error: ' + result.message);
                 }

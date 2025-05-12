@@ -13,6 +13,12 @@
                 <p class="text-xs text-gray-500">
                     {{ $transaction->created_at->format('d M Y - H:i') }}
                 </p>
+                <!-- Tambahkan customer name jika ada -->
+                @if($transaction->customer_name)
+                <p class="text-sm text-gray-700 mt-1">
+                    <span class="font-medium">Customer:</span> {{ $transaction->customer_name }}
+                </p>
+                @endif
             </div>
             <div class="text-right">
                 <span class="font-semibold text-blue-600">Rp{{ number_format($transaction->final_amount, 0, ',', '.') }}</span>
@@ -71,13 +77,23 @@
         </div>
     </div>
     
-    <!-- Additional information -->
-    @if($transaction->notes)
-        <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+    <!-- Customer & Additional information -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <!-- Tampilkan informasi customer dalam bagian tersendiri jika ada -->
+        @if($transaction->customer_name)
+        <div class="mb-3">
+            <h3 class="font-medium mb-1">Customer Information</h3>
+            <p class="text-sm text-gray-600">{{ $transaction->customer_name }}</p>
+        </div>
+        <div class="border-t border-gray-100 my-2"></div>
+        @endif
+        
+        <!-- Notes jika ada -->
+        @if($transaction->notes)
             <h3 class="font-medium mb-1">Notes</h3>
             <p class="text-sm text-gray-600">{{ $transaction->notes }}</p>
-        </div>
-    @endif
+        @endif
+    </div>
     
     <!-- Action buttons -->
     <div class="flex space-x-2">

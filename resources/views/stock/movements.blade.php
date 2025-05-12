@@ -12,7 +12,7 @@
         </a>
     </div>
     
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
         <div class="divide-y divide-gray-100">
             @forelse($movements as $movement)
                 <div class="p-4">
@@ -53,6 +53,11 @@
                 </div>
             @endforelse
         </div>
+    </div>
+    
+    <!-- Pagination Navigation -->
+    <div class="mt-4 flex justify-center">
+        {{ $movements->links('pagination.simple-tailwind') }}
     </div>
 </div>
 @endsection

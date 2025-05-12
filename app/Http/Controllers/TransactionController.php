@@ -40,7 +40,8 @@ class TransactionController extends Controller
             'products.*.quantity' => 'required|integer|min:1',
             'payment_method' => 'required|in:cash,card,transfer,other',
             'tax_percent' => 'nullable|numeric|min:0|max:100',
-            'discount_amount' => 'nullable|numeric|min:0',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'customer_name' => 'nullable|string|max:255', // Tambahkan validasi untuk customer_name
             'notes' => 'nullable|string',
         ]);
 
@@ -84,8 +85,11 @@ class TransactionController extends Controller
                 $taxAmount = ($totalAmount * $request->tax_percent) / 100;
             }
             
-            // Apply discount if provided
-            $discountAmount = $request->discount_amount ?? 0;
+            // Apply discount percent if provided
+            $discountAmount = 0;
+            if ($request->filled('discount_percent')) {
+                $discountAmount = ($totalAmount * $request->discount_percent) / 100;
+            }
             
             // Calculate final amount
             $finalAmount = $totalAmount + $taxAmount - $discountAmount;
@@ -94,9 +98,11 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'invoice_number' => 'INV-' . date('Ymd') . '-' . Str::random(5),
                 'user_id' => Auth::id(),
+                'customer_name' => $request->customer_name, // Simpan customer_name
                 'total_amount' => $totalAmount,
                 'tax_amount' => $taxAmount,
                 'discount_amount' => $discountAmount,
+                'discount_percent' => $request->discount_percent ?? 0,
                 'final_amount' => $finalAmount,
                 'payment_method' => $request->payment_method,
                 'notes' => $request->notes,

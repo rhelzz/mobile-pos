@@ -9,9 +9,31 @@ use App\Models\StockMovement;
 
 class StockController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $filter = $request->get('filter');
+        
+        $query = Product::with('category');
+        
+        // Filter berdasarkan stok
+        switch ($filter) {
+            case 'low':
+                // Produk dengan stok kurang dari atau sama dengan 5 (low stock)
+                $query->where('stock', '>', 0)->where('stock', '<=', 5);
+                break;
+                
+            case 'out':
+                // Produk dengan stok 0 (out of stock)
+                $query->where('stock', 0);
+                break;
+                
+            default:
+                // Semua produk (default)
+                break;
+        }
+        
+        $products = $query->get();
+        
         return view('stock.index', compact('products'));
     }
 
@@ -52,7 +74,7 @@ class StockController extends Controller
     {
         $movements = StockMovement::with('product', 'transaction')
                    ->orderBy('created_at', 'desc')
-                   ->get();
+                   ->paginate(6); // Ubah get() menjadi paginate(6)
                    
         return view('stock.movements', compact('movements'));
     }
