@@ -4,11 +4,10 @@
 @section('header-title', 'Point of Sale')
 
 @section('head')
-    <!-- Script untuk Midtrans -->
+    <!-- Script untuk Midtrans dengan atribut async dan defer dihilangkan -->
     <script type="text/javascript" 
         src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}">
-    </script>
+        data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 @endsection
 
 @push('styles')
@@ -906,6 +905,9 @@ function cashier() {
             this.isProcessing = true;
             
             try {
+                // Log payment method before making the request
+                console.log('Using payment method:', this.paymentMethod);
+                
                 const response = await fetch('/transactions', {
                     method: 'POST',
                     headers: {
@@ -925,13 +927,33 @@ function cashier() {
                     })
                 });
                 
-                const result = await response.json();
+                // Log raw response for debugging
+                const responseText = await response.text();
+                console.log('Transaction response (raw):', responseText);
+                
+                // Parse response as JSON
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Error parsing transaction response:', e);
+                    alert('Server returned invalid JSON. Please check your server logs.');
+                    this.isProcessing = false;
+                    return;
+                }
+                
+                console.log('Transaction result:', result);
                 
                 if (result.success) {
                     this.lastTransaction = result.transaction;
                     
+                    // Log transaction and Midtrans flag
+                    console.log('Transaction saved:', this.lastTransaction);
+                    console.log('Use Midtrans?', result.use_midtrans && this.paymentMethod === 'midtrans');
+                    
                     // Cek jika menggunakan Midtrans
                     if (result.use_midtrans && this.paymentMethod === 'midtrans') {
+                        console.log('Starting Midtrans payment flow');
                         await this.processMidtransPayment(result.transaction.id);
                     } else {
                         this.showSuccessModal = true;
@@ -939,11 +961,11 @@ function cashier() {
                         this.customerName = '';
                     }
                 } else {
-                    alert('Error: ' + result.message);
+                    alert('Error: ' + (result.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error processing transaction:', error);
-                alert('Failed to process transaction. Please try again.');
+                alert('Failed to process transaction. Please try again: ' + error.message);
             } finally {
                 this.isProcessing = false;
             }
@@ -951,6 +973,8 @@ function cashier() {
         
         async processMidtransPayment(transactionId) {
             try {
+                console.log('Requesting token for transaction:', transactionId);
+                
                 // Request token dari server
                 const tokenResponse = await fetch('{{ route('midtrans.token') }}', {
                     method: 'POST',
@@ -963,35 +987,66 @@ function cashier() {
                     })
                 });
                 
-                const tokenResult = await tokenResponse.json();
+                // Log HTTP status for debugging
+                console.log('Token request status:', tokenResponse.status);
                 
-                if (tokenResult.success) {
+                // Get raw response first
+                const responseText = await tokenResponse.text();
+                console.log('Token raw response:', responseText);
+                
+                // Try to parse as JSON
+                let tokenResult;
+                try {
+                    tokenResult = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse token response:', e);
+                    alert('Server returned invalid JSON response. Please check server logs.');
+                    return;
+                }
+                
+                console.log('Token response parsed:', tokenResult);
+                
+                if (tokenResult.success && tokenResult.snap_token) {
+                    console.log('Using snap token:', tokenResult.snap_token);
+                    
+                    // Verify snap object is available
+                    if (!window.snap) {
+                        console.error('Midtrans Snap.js is not loaded properly');
+                        alert('Payment gateway not initialized properly. Please refresh the page and try again.');
+                        return;
+                    }
+                    
                     // Tampilkan Snap Payment Page
                     window.snap.pay(tokenResult.snap_token, {
                         onSuccess: (result) => {
+                            console.log('Payment success:', result);
                             this.showSuccessModal = true;
                             this.clearCart();
                             this.customerName = '';
                         },
                         onPending: (result) => {
+                            console.log('Payment pending:', result);
                             alert("Menunggu pembayaran Anda!");
                             this.clearCart();
                             this.customerName = '';
                             window.location.href = '{{ route('transactions.index') }}';
                         },
                         onError: (result) => {
-                            alert("Pembayaran gagal!");
+                            console.error('Payment error:', result);
+                            alert("Pembayaran gagal: " + (result.message || 'Unknown error'));
                         },
                         onClose: () => {
+                            console.log('Snap payment closed');
                             alert("Anda menutup popup tanpa menyelesaikan pembayaran");
                         }
                     });
                 } else {
-                    alert('Gagal mendapatkan token pembayaran: ' + tokenResult.message);
+                    console.error('Failed to get token:', tokenResult);
+                    alert('Gagal mendapatkan token pembayaran: ' + (tokenResult.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Midtrans payment error:', error);
-                alert('Terjadi kesalahan pada payment gateway. Silakan coba lagi.');
+                alert('Terjadi kesalahan pada payment gateway. Silakan coba lagi: ' + error.message);
             }
         },
 

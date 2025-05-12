@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('discount_percent', 5, 2)->default(0); // Tambahkan kolom untuk menyimpan persentase diskon
             $table->decimal('final_amount', 10, 2);
-            $table->enum('payment_method', ['cash', 'card', 'transfer', 'other'])->default('cash');
+            $table->enum('payment_method', ['cash', 'card', 'transfer', 'other', 'midtrans'])->default('cash');
             $table->text('notes')->nullable();
             $table->string('midtrans_transaction_id')->nullable();
             $table->string('midtrans_transaction_status')->nullable();

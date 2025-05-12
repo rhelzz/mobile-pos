@@ -13,76 +13,80 @@ class MidtransController extends Controller
 {
     public function __construct()
     {
-        // Set konfigurasi Midtrans langsung di constructor
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$clientKey = env('MIDTRANS_CLIENT_KEY');
-        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        // Konfigurasi Midtrans
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY', '');
+        Config::$clientKey = env('MIDTRANS_CLIENT_KEY', '');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false) === 'true';
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }
     
     public function getSnapToken(Request $request)
     {
-        // Untuk mengamankan API ini dari akses luar
-        if (!$request->ajax()) {
-            return response()->json(['error' => 'Invalid request'], 403);
-        }
+        // Tambahkan log untuk debugging
+        Log::info('Midtrans Token Request', $request->all());
 
         // Validasi input
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
         ]);
 
-        // Ambil data transaksi
-        $transaction = Transaction::with('transactionItems.product')->findOrFail($request->transaction_id);
-
-        // Persiapkan data untuk Midtrans
-        $items = [];
-        foreach ($transaction->transactionItems as $item) {
-            $items[] = [
-                'id' => $item->product_id,
-                'price' => (int) $item->price,
-                'quantity' => $item->quantity,
-                'name' => substr($item->product->name, 0, 50), // Maksimal 50 karakter
-            ];
-        }
-
-        // Cek apakah ada pajak dan diskon
-        if ($transaction->tax_amount > 0) {
-            $items[] = [
-                'id' => 'tax',
-                'price' => (int) $transaction->tax_amount,
-                'quantity' => 1,
-                'name' => 'Tax',
-            ];
-        }
-
-        if ($transaction->discount_amount > 0) {
-            $items[] = [
-                'id' => 'discount',
-                'price' => (int) -$transaction->discount_amount, // Negatif untuk diskon
-                'quantity' => 1,
-                'name' => 'Discount',
-            ];
-        }
-
-        // Data untuk Midtrans
-        $params = [
-            'transaction_details' => [
-                'order_id' => $transaction->invoice_number,
-                'gross_amount' => (int) $transaction->final_amount,
-            ],
-            'item_details' => $items,
-            'customer_details' => [
-                'first_name' => $transaction->customer_name ?: 'Customer',
-                'email' => 'customer@email.com', // Optional
-                'phone' => 'customer_phone', // Optional
-            ],
-        ];
-
         try {
+            // Ambil data transaksi
+            $transaction = Transaction::with('transactionItems.product')->findOrFail($request->transaction_id);
+
+            // Persiapkan data untuk Midtrans
+            $items = [];
+
+            // Tambahkan item transaksi
+            foreach ($transaction->transactionItems as $item) {
+                $items[] = [
+                    'id' => $item->product_id,
+                    'price' => (int) $item->price,
+                    'quantity' => $item->quantity,
+                    'name' => substr($item->product->name, 0, 50), // Maksimal 50 karakter
+                ];
+            }
+
+            // Cek apakah ada pajak dan diskon
+            if ($transaction->tax_amount > 0) {
+                $items[] = [
+                    'id' => 'tax',
+                    'price' => (int) $transaction->tax_amount,
+                    'quantity' => 1,
+                    'name' => 'Tax',
+                ];
+            }
+
+            if ($transaction->discount_amount > 0) {
+                $items[] = [
+                    'id' => 'discount',
+                    'price' => (int) -$transaction->discount_amount, // Negatif untuk diskon
+                    'quantity' => 1,
+                    'name' => 'Discount',
+                ];
+            }
+
+            // Data untuk Midtrans
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $transaction->invoice_number,
+                    'gross_amount' => (int) $transaction->final_amount,
+                ],
+                'item_details' => $items,
+                'customer_details' => [
+                    'first_name' => $transaction->customer_name ?: 'Customer',
+                    'email' => 'customer@example.com', // Ganti dengan email pelanggan jika tersedia
+                    'phone' => '08123456789', // Ganti dengan nomor telepon pelanggan jika tersedia
+                ],
+            ];
+
+            Log::info('Midtrans Params', $params);
+
             // Buat token transaksi
             $snapToken = Snap::getSnapToken($params);
+            
+            Log::info('Midtrans Token Generated', ['token' => $snapToken]);
 
             // Return token ke client
             return response()->json([
@@ -102,7 +106,13 @@ class MidtransController extends Controller
     public function notification(Request $request)
     {
         try {
-            $notification = new Notification();
+            $notification = new \Midtrans\Notification();
+            
+            Log::info('Midtrans Notification Received', [
+                'order_id' => $notification->order_id,
+                'status_code' => $notification->status_code,
+                'transaction_status' => $notification->transaction_status
+            ]);
             
             $orderId = $notification->order_id;
             $statusCode = $notification->status_code;
@@ -110,18 +120,11 @@ class MidtransController extends Controller
             $fraudStatus = $notification->fraud_status;
             $paymentType = $notification->payment_type;
             
-            Log::info('Midtrans Notification', [
-                'order_id' => $orderId,
-                'status_code' => $statusCode,
-                'transaction_status' => $transactionStatus,
-                'fraud_status' => $fraudStatus,
-                'payment_type' => $paymentType
-            ]);
-
             // Cari transaksi berdasarkan invoice number (order_id)
             $transaction = Transaction::where('invoice_number', $orderId)->first();
             
             if (!$transaction) {
+                Log::error('Midtrans Notification: Transaction not found', ['order_id' => $orderId]);
                 return response()->json(['error' => 'Transaction not found'], 404);
             }
 
@@ -166,6 +169,11 @@ class MidtransController extends Controller
             }
             
             $transaction->save();
+
+            Log::info('Midtrans Notification: Transaction updated', [
+                'order_id' => $orderId,
+                'status' => $transaction->midtrans_transaction_status
+            ]);
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
