@@ -55,7 +55,7 @@
     <div class="text-sm text-blue-100">
         <span class="bg-blue-700 bg-opacity-50 px-3 py-1 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 00-2 2h2m2-4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
             </svg>
             POS Mode
         </span>
@@ -148,7 +148,7 @@
                             <template x-if="!product.image_path">
                                 <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                                     <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                             </template>
@@ -182,7 +182,7 @@
                         <template x-if="!product.image_path">
                             <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </template>
@@ -304,7 +304,7 @@
         >
             <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" x-text="getTotalItems()"></span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
         </button>
     </div>
@@ -323,7 +323,7 @@
             </div>
             <button @click="confirmClearCart()" class="text-sm flex items-center" x-show="cart.items.length > 0">
                 <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v10l2.293-2.293c.63-.63 1.707-.184 1.707.707V21"></path>
                 </svg>
                 Clear All
             </button>
@@ -342,7 +342,7 @@
                             <template x-if="!item.image_path">
                                 <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                             </template>
@@ -383,7 +383,7 @@
                         </div>
                         <button @click="removeItem(index)" class="text-red-500 hover:text-red-700">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v10l2.293-2.293c.63-.63 1.707-.184 1.707.707V21"></path>
                             </svg>
                         </button>
                     </div>
@@ -417,25 +417,58 @@
                 <span class="text-gray-600">Subtotal</span>
                 <span class="font-medium" x-text="formatCurrency(calculateSubtotal())"></span>
             </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-gray-600">Tax (10%)</span>
-                <span class="font-medium" x-text="formatCurrency(calculateTax())"></span>
-            </div>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-gray-600">Discount</span>
-                <div class="relative flex items-center">
-                    <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                        <span class="text-gray-500">Rp</span>
+            
+            <!-- Improved Tax Rate Selector -->
+            <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-2">Tax</span>
+                    <div class="inline-flex relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-2.5 text-xs text-gray-500">
+                            Rate:
+                        </div>
+                        <select 
+                            x-model="cart.taxRate" 
+                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-12 pr-8 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
+                        >
+                            <option value="0">0%</option>
+                            <option value="10">10%</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-1.5 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
                     </div>
-                    <input 
-                        type="number" 
-                        x-model="cart.discount" 
-                        min="0" 
-                        step="1000" 
-                        class="w-24 pl-8 text-right rounded border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    >
                 </div>
+                <span class="font-medium text-sm" x-text="formatCurrency(calculateTax())"></span>
             </div>
+            
+            <!-- Improved Discount Percentage Selector -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-2">Discount</span>
+                    <div class="inline-flex relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-2.5 text-xs text-gray-500">
+                            Rate:
+                        </div>
+                        <select 
+                            x-model="cart.discountPercent" 
+                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-12 pr-8 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
+                        >
+                            <option value="0">0%</option>
+                            <option value="10">10%</option>
+                            <option value="25">25%</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-1.5 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <span class="font-medium text-sm text-green-600" x-text="formatCurrency(calculateDiscount())"></span>
+            </div>
+            
             <div class="flex justify-between items-center mb-4 text-lg font-bold">
                 <span>Total</span>
                 <span class="text-blue-600" x-text="formatCurrency(calculateTotal())"></span>
@@ -478,7 +511,7 @@
             >
                 <span x-show="!isProcessing" class="flex items-center">
                     <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2h2m8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
                     Complete Sale
                 </span>
@@ -543,7 +576,7 @@
                     <button @click="printReceipt()" class="flex-1 py-3 px-4 bg-gray-200 text-gray-800 rounded-lg border border-gray-300">
                         <div class="flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h6z" />
                             </svg>
                             Print
                         </div>
@@ -574,7 +607,8 @@ function cashier() {
         viewMode: 'grid', // 'grid' or 'list'
         cart: {
             items: [],
-            discount: 0
+            taxRate: '10', // Default tax rate (as string for select binding)
+            discountPercent: '0' // Default discount percent (as string for select binding)
         },
         showCart: false,
         isProcessing: false,
@@ -591,6 +625,19 @@ function cashier() {
             if (savedCart) {
                 try {
                     this.cart = JSON.parse(savedCart);
+                    
+                    // Ensure we have the new taxRate and discountPercent properties
+                    if (this.cart.taxRate === undefined) {
+                        this.cart.taxRate = '10';
+                    }
+                    if (this.cart.discountPercent === undefined) {
+                        this.cart.discountPercent = '0';
+                    }
+                    
+                    // Remove old discount amount if it exists
+                    if (this.cart.discount !== undefined) {
+                        delete this.cart.discount;
+                    }
                 } catch (e) {
                     console.error('Error loading saved cart', e);
                     this.clearCart();
@@ -714,7 +761,8 @@ function cashier() {
 
         clearCart() {
             this.cart.items = [];
-            this.cart.discount = 0;
+            this.cart.taxRate = '10';
+            this.cart.discountPercent = '0';
             localStorage.removeItem('pos_cart');
         },
 
@@ -723,13 +771,17 @@ function cashier() {
         },
 
         calculateTax() {
-            return this.calculateSubtotal() * 0.1; // 10% tax
+            return this.calculateSubtotal() * (parseFloat(this.cart.taxRate) / 100);
+        },
+        
+        calculateDiscount() {
+            return this.calculateSubtotal() * (parseFloat(this.cart.discountPercent) / 100);
         },
 
         calculateTotal() {
             const subtotal = this.calculateSubtotal();
             const tax = this.calculateTax();
-            const discount = parseFloat(this.cart.discount) || 0;
+            const discount = this.calculateDiscount();
             
             return Math.max(0, subtotal + tax - discount);
         },
@@ -778,8 +830,8 @@ function cashier() {
                             quantity: item.quantity
                         })),
                         payment_method: this.paymentMethod,
-                        tax_percent: 10,
-                        discount_amount: this.cart.discount,
+                        tax_percent: parseFloat(this.cart.taxRate),
+                        discount_percent: parseFloat(this.cart.discountPercent),
                         notes: ''
                     })
                 });
