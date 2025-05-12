@@ -181,4 +181,45 @@ class MidtransController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function success(Transaction $transaction)
+    {
+        // Update transaction status to success if it's not already
+        if ($transaction->midtrans_transaction_status != 'success') {
+            $transaction->midtrans_transaction_status = 'success';
+            $transaction->save();
+        }
+        
+        return view('transactions.success', compact('transaction'));
+    }
+
+    public function updateStatus(Transaction $transaction, Request $request)
+    {
+        // Validate status
+        $request->validate([
+            'status' => 'required|in:success,pending,cancel,expire,deny'
+        ]);
+        
+        // Update transaction status
+        $oldStatus = $transaction->midtrans_transaction_status;
+        $transaction->midtrans_transaction_status = $request->status;
+        $transaction->save();
+        
+        // Log the update
+        Log::info('Transaction status updated manually', [
+            'order_id' => $transaction->invoice_number,
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+            'updated_by' => auth()->user()->name
+        ]);
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status transaksi berhasil diubah menjadi ' . $request->status
+            ]);
+        }
+        
+        return redirect()->back()->with('success', 'Status transaksi berhasil diubah menjadi ' . $request->status);
+    }
 }

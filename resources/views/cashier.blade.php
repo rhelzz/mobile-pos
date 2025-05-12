@@ -1020,9 +1020,8 @@ function cashier() {
                     window.snap.pay(tokenResult.snap_token, {
                         onSuccess: (result) => {
                             console.log('Payment success:', result);
-                            this.showSuccessModal = true;
-                            this.clearCart();
-                            this.customerName = '';
+                            // Redirect to success page
+                            window.location.href = '{{ url("/midtrans/success") }}/' + this.lastTransaction.id;
                         },
                         onPending: (result) => {
                             console.log('Payment pending:', result);

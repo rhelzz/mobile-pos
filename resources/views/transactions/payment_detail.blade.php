@@ -1,17 +1,22 @@
 @extends('layouts.mobile')
 
-@section('title', 'Payment Detail')
-@section('header-title', 'Payment Detail')
+@section('title', 'Payment Details')
 
 @section('content')
-<div class="mb-4">
-    <!-- Transaction header -->
+<div class="max-w-md mx-auto py-4 px-4">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-semibold">Payment Details</h1>
+    </div>
+    
+    <!-- Transaction Header -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
         <div class="flex justify-between items-start">
             <div>
-                <h3 class="font-medium">{{ $transaction->invoice_number }}</h3>
+                <p class="text-sm text-blue-600 font-medium">
+                    {{ $transaction->invoice_number }}
+                </p>
                 <p class="text-xs text-gray-500">
-                    {{ $transaction->created_at->format('d M Y - H:i') }}
+                    {{ $transaction->created_at->format('d M Y, H:i') }}
                 </p>
                 @if($transaction->customer_name)
                 <p class="text-sm text-gray-700 mt-1">
@@ -80,6 +85,32 @@
             Download Instruksi Pembayaran
         </a>
         @endif
+        
+        @if($transaction->midtrans_transaction_status == 'pending')
+        <div class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <h4 class="font-medium text-sm mb-2">Update Payment Status</h4>
+            <p class="text-xs text-gray-600 mb-3">Pembayaran ini masih dalam status menunggu. Jika pembayaran telah dilakukan, Anda dapat memperbarui statusnya secara manual.</p>
+            
+            <form action="{{ route('transactions.update-status', $transaction) }}" method="POST" class="flex space-x-2">
+                @csrf
+                <select name="status" class="flex-1 rounded-lg border-gray-300 text-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    <option value="success">Berhasil (Success)</option>
+                    <option value="cancel">Dibatalkan (Cancel)</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white text-sm py-2 px-3 rounded-lg">
+                    Update Status
+                </button>
+            </form>
+        </div>
+        @endif
+        
+        @if($transaction->midtrans_transaction_status == 'success')
+        <div class="mt-2">
+            <a href="{{ route('midtrans.success', $transaction) }}" class="block w-full py-2 bg-green-600 text-white text-center rounded-lg">
+                View Success Details
+            </a>
+        </div>
+        @endif
     </div>
     
     <div class="flex space-x-2">
@@ -88,4 +119,47 @@
         </a>
     </div>
 </div>
+
+@if($transaction->midtrans_transaction_status == 'pending')
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+<script>
+async function retryPayment(transactionId) {
+    try {
+        const response = await fetch('{{ route('midtrans.token') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ transaction_id: transactionId })
+        });
+        
+        const tokenResult = await response.json();
+        
+        if (tokenResult.success && tokenResult.snap_token) {
+            window.snap.pay(tokenResult.snap_token, {
+                onSuccess: (result) => {
+                    window.location.href = '{{ url("/midtrans/success") }}/' + transactionId;
+                },
+                onPending: (result) => {
+                    alert("Menunggu pembayaran Anda!");
+                    location.reload();
+                },
+                onError: (result) => {
+                    alert("Pembayaran gagal: " + (result.message || 'Unknown error'));
+                },
+                onClose: () => {
+                    alert("Anda menutup popup tanpa menyelesaikan pembayaran");
+                }
+            });
+        } else {
+            alert('Failed to get payment token: ' + (tokenResult.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred: ' + error.message);
+    }
+}
+</script>
+@endif
 @endsection

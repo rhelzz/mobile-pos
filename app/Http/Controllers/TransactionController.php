@@ -175,4 +175,14 @@ class TransactionController extends Controller
         $transaction->load('transactionItems.product', 'user');
         return view('transactions.show', compact('transaction'));
     }
+
+    public function pendingPayments()
+    {
+        $pendingTransactions = Transaction::where('payment_method', 'midtrans')
+            ->where('midtrans_transaction_status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('transactions.pending', compact('pendingTransactions'));
+    }
 }

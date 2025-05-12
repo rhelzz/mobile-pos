@@ -60,4 +60,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/midtrans/get-token', [MidtransController::class, 'getSnapToken'])->name('midtrans.token');
     Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
     Route::get('/transactions/{transaction}/payment', [TransactionController::class, 'paymentDetail'])->name('transactions.payment');
+    // Add this inside your auth middleware group
+    Route::get('/midtrans/success/{transaction}', [MidtransController::class, 'success'])->name('midtrans.success');
+    Route::post('/transactions/{transaction}/update-status', [MidtransController::class, 'updateStatus'])->name('transactions.update-status');
+    // Add this inside your auth middleware group
+    Route::get('/pending-payments', [TransactionController::class, 'pendingPayments'])->name('transactions.pending');
+
 });
