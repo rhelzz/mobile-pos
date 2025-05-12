@@ -70,12 +70,53 @@ class StockController extends Controller
             ->with('success', 'Stock updated successfully.');
     }
 
-    public function movements()
+    public function movements(Request $request)
     {
-        $movements = StockMovement::with('product', 'transaction')
-                   ->orderBy('created_at', 'desc')
-                   ->paginate(6); // Ubah get() menjadi paginate(6)
-                   
-        return view('stock.movements', compact('movements'));
+        // Memulai query dasar
+        $query = StockMovement::with('product', 'transaction');
+        
+        // Filter berdasarkan tanggal mulai
+        if ($request->has('start_date') && $request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        
+        // Filter berdasarkan tanggal akhir
+        if ($request->has('end_date') && $request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+        
+        // Filter berdasarkan tipe pergerakan (in/out)
+        if ($request->has('movement_type') && $request->movement_type) {
+            $query->where('type', $request->movement_type);
+        }
+        
+        // Filter berdasarkan produk
+        if ($request->has('product_id') && $request->product_id) {
+            $query->where('product_id', $request->product_id);
+        }
+        
+        // Mendapatkan data dengan pagination
+        $movements = $query->orderBy('created_at', 'desc')
+                   ->paginate(6);
+        
+        // Mengambil semua produk untuk dropdown filter
+        $products = Product::orderBy('name')->get();
+        
+        // Mendapatkan nama produk terpilih untuk ditampilkan di filter
+        $selectedProduct = null;
+        if ($request->product_id) {
+            $selectedProduct = Product::find($request->product_id)?->name;
+        }
+        
+        return view('stock.movements', compact('movements', 'products', 'selectedProduct'));
+    }
+
+    public function truncateMovements()
+    {
+        // Langsung menghapus semua data pergerakan stok tanpa pengecekan izin
+        StockMovement::truncate();
+        
+        return redirect()->route('stock.movements')
+            ->with('success', 'Semua data pergerakan stok berhasil dihapus.');
     }
 }

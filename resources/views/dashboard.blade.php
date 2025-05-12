@@ -13,7 +13,7 @@
     <div class="grid grid-cols-2 gap-3 mb-6">
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
             <p class="text-sm font-medium text-gray-500">Today's Sales</p>
-            <p class="text-xl font-bold">{{ number_format($todaySales, 2) }}</p>
+            <p class="text-xl font-bold">Rp {{ number_format($todaySales, 0, ',', '.') }}</p>
         </div>
         
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
@@ -73,7 +73,7 @@
                             </p>
                         </div>
                         <p class="font-semibold text-blue-600">
-                            {{ number_format($transaction->final_amount, 2) }}
+                            Rp {{ number_format($transaction->final_amount, 0, ',', '.') }}
                         </p>
                     </div>
                 </a>
@@ -137,7 +137,17 @@
                     beginAtZero: true,
                     ticks: {
                         // For mobile, reduce the y-axis tick density
-                        maxTicksLimit: 5
+                        maxTicksLimit: 5,
+                        // Format y-axis ticks as Rupiah
+                        callback: function(value) {
+                            if (value >= 1000000) {
+                                return 'Rp ' + (value / 1000000).toFixed(1) + ' jt';
+                            } else if (value >= 1000) {
+                                return 'Rp ' + (value / 1000).toFixed(0) + ' rb';
+                            } else {
+                                return 'Rp ' + value;
+                            }
+                        }
                     }
                 },
                 x: {
@@ -151,6 +161,15 @@
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        // Format tooltip values as Rupiah
+                        label: function(context) {
+                            let value = context.raw;
+                            return 'Sales: Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
                 }
             }
         }

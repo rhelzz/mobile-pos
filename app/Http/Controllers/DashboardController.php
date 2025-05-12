@@ -24,8 +24,8 @@ class DashboardController extends Controller
         // Get total sales
         $totalSales = Transaction::sum('final_amount');
         
-        // Get products with low stock (less than 10)
-        $lowStockProducts = Product::where('stock', '<', 10)->get();
+        // Get products with low stock (less than 5)
+        $lowStockProducts = Product::where('stock', '<', value: 5)->get();
         
         // Recent transactions (latest 5)
         $recentTransactions = Transaction::with('user', 'transactionItems.product')

@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::post('/stock/add', [StockController::class, 'add'])->name('stock.add');
     Route::get('/stock/movements', [StockController::class, 'movements'])->name('stock.movements');
+    // Tambahkan route ini di antara route stock lainnya
+    Route::delete('stock/truncate', [StockController::class, 'truncateMovements'])->name('stock.truncate');
     
     // Reports
     Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');

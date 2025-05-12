@@ -2,24 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Transaction;
-use App\Models\TransactionItem;
+use Carbon\Carbon;
 use App\Models\Product;
-use App\Models\StockMovement;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\StockMovement;
+use App\Models\TransactionItem;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::with('user')
-                      ->orderBy('created_at', 'desc')
-                      ->get();
+        $query = Transaction::with('user', 'transactionItems')
+                ->orderBy('created_at', 'desc');
+        
+        // Apply date filters if provided
+        if ($request->filled('start_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+        
+        if ($request->filled('end_date')) {
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+        
+        // Apply payment method filter if provided
+        if ($request->filled('payment_method') && $request->payment_method !== 'all') {
+            $query->where('payment_method', $request->payment_method);
+        }
                       
+        $transactions = $query->paginate(5)->withQueryString();
+        
         return view('transactions.index', compact('transactions'));
     }
 
