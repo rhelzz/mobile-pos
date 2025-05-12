@@ -56,10 +56,10 @@ class TransactionController extends Controller
             'products' => 'required|array',
             'products.*.id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|in:cash,card,transfer,other',
+            'payment_method' => 'required|in:cash,card,transfer,midtrans,other', // Tambahkan midtrans
             'tax_percent' => 'nullable|numeric|min:0|max:100',
             'discount_percent' => 'nullable|numeric|min:0|max:100',
-            'customer_name' => 'nullable|string|max:255', // Tambahkan validasi untuk customer_name
+            'customer_name' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
@@ -116,7 +116,7 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'invoice_number' => 'INV-' . date('Ymd') . '-' . Str::random(5),
                 'user_id' => Auth::id(),
-                'customer_name' => $request->customer_name, // Simpan customer_name
+                'customer_name' => $request->customer_name,
                 'total_amount' => $totalAmount,
                 'tax_amount' => $taxAmount,
                 'discount_amount' => $discountAmount,
@@ -124,6 +124,8 @@ class TransactionController extends Controller
                 'final_amount' => $finalAmount,
                 'payment_method' => $request->payment_method,
                 'notes' => $request->notes,
+                // Tambahkan status default untuk Midtrans
+                'midtrans_transaction_status' => $request->payment_method == 'midtrans' ? 'pending' : null,
             ]);
             
             // Create transaction items
@@ -145,17 +147,27 @@ class TransactionController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Transaction completed successfully',
+                'message' => 'Transaction created successfully',
                 'transaction' => $transaction,
+                // Jika menggunakan Midtrans, kirim ID transaksi agar frontend bisa request token
+                'use_midtrans' => $request->payment_method === 'midtrans',
             ]);
             
         } catch (\Exception $e) {
             DB::rollBack();
+            
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    
+    // Tambahkan method untuk payment detail
+    public function paymentDetail(Transaction $transaction)
+    {
+        $transaction->load('transactionItems.product', 'user');
+        return view('transactions.payment_detail', compact('transaction'));
     }
 
     public function show(Transaction $transaction)

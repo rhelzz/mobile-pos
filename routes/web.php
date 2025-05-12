@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MidtransController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\StockController;
 
 // Home route
 Route::get('/', function () {
@@ -54,4 +55,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
     Route::get('/reports/products', [ReportController::class, 'products'])->name('reports.products');
     Route::get('/reports/hourly', [ReportController::class, 'hourly'])->name('reports.hourly');
+
+    // Route untuk Midtrans
+    Route::post('/midtrans/get-token', [MidtransController::class, 'getSnapToken'])->name('midtrans.token');
+    Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
+    Route::get('/transactions/{transaction}/payment', [TransactionController::class, 'paymentDetail'])->name('transactions.payment');
 });

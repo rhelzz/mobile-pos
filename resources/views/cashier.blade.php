@@ -3,6 +3,14 @@
 @section('title', 'Cashier')
 @section('header-title', 'Point of Sale')
 
+@section('head')
+    <!-- Script untuk Midtrans -->
+    <script type="text/javascript" 
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}">
+    </script>
+@endsection
+
 @push('styles')
 <style>
     /* Hide number input spinners */
@@ -75,7 +83,7 @@
     <div class="text-sm text-blue-100">
         <span class="bg-blue-700 bg-opacity-50 px-3 py-1 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2h2m8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
             </svg>
             POS Mode
         </span>
@@ -343,7 +351,7 @@
             </div>
             <button @click="confirmClearCart()" class="text-sm flex items-center" x-show="cart.items.length > 0">
                 <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v10l2.293-2.293c.63-.63 1.707-.184 1.707.707V21"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Clear All
             </button>
@@ -403,7 +411,7 @@
                         </div>
                         <button @click="removeItem(index)" class="text-red-500 hover:text-red-700">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v10l2.293-2.293c.63-.63 1.707-.184 1.707.707V21"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
                     </div>
@@ -415,7 +423,7 @@
         <div class="flex-grow flex flex-col items-center justify-center p-4" x-show="cart.items.length === 0">
             <div class="bg-gray-100 rounded-full p-6 mb-4">
                 <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             </div>
             <h3 class="text-xl font-medium text-gray-700 mb-2">Your cart is empty</h3>
@@ -537,27 +545,35 @@
             <!-- Payment Method Selection -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                <div class="flex space-x-2">
+                <div class="grid grid-cols-2 gap-2">
                     <button
                         @click="paymentMethod = 'cash'"
                         :class="paymentMethod === 'cash' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-                        class="flex-1 py-2 rounded-lg font-medium text-center text-sm transition-colors"
+                        class="py-2 rounded-lg font-medium text-center text-sm transition-colors"
                     >
                         Cash
                     </button>
                     <button
                         @click="paymentMethod = 'transfer'"
                         :class="paymentMethod === 'transfer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-                        class="flex-1 py-2 rounded-lg font-medium text-center text-sm transition-colors"
+                        class="py-2 rounded-lg font-medium text-center text-sm transition-colors"
                     >
                         Transfer
                     </button>
                     <button
-                        @click="paymentMethod = 'edc'"
-                        :class="paymentMethod === 'edc' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-                        class="flex-1 py-2 rounded-lg font-medium text-center text-sm transition-colors"
+                        @click="paymentMethod = 'card'"
+                        :class="paymentMethod === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                        class="py-2 rounded-lg font-medium text-center text-sm transition-colors"
                     >
                         Card/EDC
+                    </button>
+                    <!-- Tambahkan opsi Midtrans -->
+                    <button
+                        @click="paymentMethod = 'midtrans'"
+                        :class="paymentMethod === 'midtrans' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                        class="py-2 rounded-lg font-medium text-center text-sm transition-colors"
+                    >
+                        Midtrans
                     </button>
                 </div>
             </div>
@@ -571,7 +587,7 @@
             >
                 <span x-show="!isProcessing" class="flex items-center">
                     <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2h2m8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                     </svg>
                     Complete Sale
                 </span>
@@ -644,7 +660,7 @@
                     <button @click="printReceipt()" class="flex-1 py-3 px-4 bg-gray-200 text-gray-800 rounded-lg border border-gray-300">
                         <div class="flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h6z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
                             </svg>
                             Print
                         </div>
@@ -901,7 +917,7 @@ function cashier() {
                             id: item.id,
                             quantity: item.quantity
                         })),
-                        customer_name: this.customerName, // Tambahkan customer_name ke data yang dikirim
+                        customer_name: this.customerName,
                         payment_method: this.paymentMethod,
                         tax_percent: parseFloat(this.cart.taxRate),
                         discount_percent: parseFloat(this.cart.discountPercent),
@@ -913,9 +929,15 @@ function cashier() {
                 
                 if (result.success) {
                     this.lastTransaction = result.transaction;
-                    this.showSuccessModal = true;
-                    this.clearCart();
-                    this.customerName = ''; // Reset customer name setelah checkout
+                    
+                    // Cek jika menggunakan Midtrans
+                    if (result.use_midtrans && this.paymentMethod === 'midtrans') {
+                        await this.processMidtransPayment(result.transaction.id);
+                    } else {
+                        this.showSuccessModal = true;
+                        this.clearCart();
+                        this.customerName = '';
+                    }
                 } else {
                     alert('Error: ' + result.message);
                 }
@@ -924,6 +946,52 @@ function cashier() {
                 alert('Failed to process transaction. Please try again.');
             } finally {
                 this.isProcessing = false;
+            }
+        },
+        
+        async processMidtransPayment(transactionId) {
+            try {
+                // Request token dari server
+                const tokenResponse = await fetch('{{ route('midtrans.token') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        transaction_id: transactionId
+                    })
+                });
+                
+                const tokenResult = await tokenResponse.json();
+                
+                if (tokenResult.success) {
+                    // Tampilkan Snap Payment Page
+                    window.snap.pay(tokenResult.snap_token, {
+                        onSuccess: (result) => {
+                            this.showSuccessModal = true;
+                            this.clearCart();
+                            this.customerName = '';
+                        },
+                        onPending: (result) => {
+                            alert("Menunggu pembayaran Anda!");
+                            this.clearCart();
+                            this.customerName = '';
+                            window.location.href = '{{ route('transactions.index') }}';
+                        },
+                        onError: (result) => {
+                            alert("Pembayaran gagal!");
+                        },
+                        onClose: () => {
+                            alert("Anda menutup popup tanpa menyelesaikan pembayaran");
+                        }
+                    });
+                } else {
+                    alert('Gagal mendapatkan token pembayaran: ' + tokenResult.message);
+                }
+            } catch (error) {
+                console.error('Midtrans payment error:', error);
+                alert('Terjadi kesalahan pada payment gateway. Silakan coba lagi.');
             }
         },
 

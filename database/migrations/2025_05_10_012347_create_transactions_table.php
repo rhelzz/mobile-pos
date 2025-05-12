@@ -23,6 +23,13 @@ return new class extends Migration
             $table->decimal('final_amount', 10, 2);
             $table->enum('payment_method', ['cash', 'card', 'transfer', 'other'])->default('cash');
             $table->text('notes')->nullable();
+            $table->string('midtrans_transaction_id')->nullable();
+            $table->string('midtrans_transaction_status')->nullable();
+            $table->string('midtrans_payment_type')->nullable();
+            $table->string('midtrans_transaction_time')->nullable();
+            $table->string('midtrans_payment_code')->nullable();
+            $table->string('midtrans_pdf_url')->nullable();
+            $table->string('midtrans_va_number')->nullable();
             $table->timestamps();
         });
     }

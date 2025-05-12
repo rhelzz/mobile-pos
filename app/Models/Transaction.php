@@ -12,7 +12,7 @@ class Transaction extends Model
     protected $fillable = [
         'invoice_number',
         'user_id',
-        'customer_name', // Tambahkan field ini
+        'customer_name',
         'total_amount',
         'tax_amount',
         'discount_amount',
@@ -20,6 +20,14 @@ class Transaction extends Model
         'final_amount',
         'payment_method',
         'notes',
+        // Tambahkan field untuk Midtrans
+        'midtrans_transaction_id',
+        'midtrans_transaction_status',
+        'midtrans_payment_type',
+        'midtrans_transaction_time',
+        'midtrans_payment_code',
+        'midtrans_pdf_url',
+        'midtrans_va_number',
     ];
 
     public function user()

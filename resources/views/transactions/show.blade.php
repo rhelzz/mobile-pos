@@ -94,6 +94,14 @@
             <p class="text-sm text-gray-600">{{ $transaction->notes }}</p>
         @endif
     </div>
+
+    @if($transaction->payment_method == 'midtrans')
+    <div class="mt-4">
+        <a href="{{ route('transactions.payment', $transaction) }}" class="block w-full text-center py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">
+            Lihat Detail Pembayaran
+        </a>
+    </div>
+    @endif
     
     <!-- Action buttons -->
     <div class="flex space-x-2">
