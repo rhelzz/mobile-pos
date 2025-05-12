@@ -142,7 +142,7 @@
                     >
                         <div class="h-32 bg-gray-50 flex items-center justify-center p-2 relative">
                             <template x-if="product.image_path">
-                                <img :src="'/storage/' + product.image_path" alt="Product" class="h-full object-contain" 
+                                <img :src="'/storage/' + product.image_path" alt="Product" class="w-full h-full object-cover" 
                                     onerror="this.onerror=null; this.src='/images/no-image.png';">
                             </template>
                             <template x-if="!product.image_path">
