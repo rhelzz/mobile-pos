@@ -47,6 +47,26 @@
     .slide-up {
         animation: slideUp 0.2s ease-out;
     }
+    
+    /* Tax and Discount Badges */
+    .tax-badge, .discount-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        line-height: 1;
+    }
+    
+    .tax-badge {
+        background-color: #EFF6FF;
+        color: #3B82F6;
+    }
+    
+    .discount-badge {
+        background-color: #F0FDF4;
+        color: #22C55E;
+    }
 </style>
 @endpush
 
@@ -55,7 +75,7 @@
     <div class="text-sm text-blue-100">
         <span class="bg-blue-700 bg-opacity-50 px-3 py-1 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 00-2 2h2m2-4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2h2m8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
             POS Mode
         </span>
@@ -423,12 +443,9 @@
                 <div class="flex items-center">
                     <span class="text-gray-600 mr-2">Tax</span>
                     <div class="inline-flex relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-2.5 text-xs text-gray-500">
-                            Rate:
-                        </div>
                         <select 
                             x-model="cart.taxRate" 
-                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-12 pr-8 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
+                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-2 pr-6 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
                         >
                             <option value="0">0%</option>
                             <option value="10">10%</option>
@@ -440,7 +457,15 @@
                         </div>
                     </div>
                 </div>
-                <span class="font-medium text-sm" x-text="formatCurrency(calculateTax())"></span>
+                <span class="font-medium text-sm flex items-center">
+                    <span x-show="parseFloat(cart.taxRate) > 0" class="tax-badge mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span x-text="cart.taxRate + '%'"></span>
+                    </span>
+                    <span x-text="formatCurrency(calculateTax())"></span>
+                </span>
             </div>
             
             <!-- Improved Discount Percentage Selector -->
@@ -448,12 +473,9 @@
                 <div class="flex items-center">
                     <span class="text-gray-600 mr-2">Discount</span>
                     <div class="inline-flex relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-2.5 text-xs text-gray-500">
-                            Rate:
-                        </div>
                         <select 
                             x-model="cart.discountPercent" 
-                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-12 pr-8 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
+                            class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 pl-2 pr-6 py-1 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
                         >
                             <option value="0">0%</option>
                             <option value="10">10%</option>
@@ -466,7 +488,35 @@
                         </div>
                     </div>
                 </div>
-                <span class="font-medium text-sm text-green-600" x-text="formatCurrency(calculateDiscount())"></span>
+                <span class="font-medium text-sm text-green-600 flex items-center">
+                    <span x-show="parseFloat(cart.discountPercent) > 0" class="discount-badge mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        <span x-text="cart.discountPercent + '%'"></span>
+                    </span>
+                    <span x-text="'-' + formatCurrency(calculateDiscount())"></span>
+                </span>
+            </div>
+            
+            <!-- Summary breakdown -->
+            <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                <div class="flex justify-between items-center mb-1 text-sm">
+                    <span class="text-gray-500">Items total:</span>
+                    <span class="text-gray-700" x-text="formatCurrency(calculateSubtotal())"></span>
+                </div>
+                <template x-if="parseFloat(cart.taxRate) > 0">
+                    <div class="flex justify-between items-center mb-1 text-sm">
+                        <span class="text-gray-500" x-text="'Tax (' + cart.taxRate + '%)'"></span>
+                        <span class="text-gray-700" x-text="formatCurrency(calculateTax())"></span>
+                    </div>
+                </template>
+                <template x-if="parseFloat(cart.discountPercent) > 0">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500" x-text="'Discount (' + cart.discountPercent + '%)'"></span>
+                        <span class="text-green-600" x-text="'-' + formatCurrency(calculateDiscount())"></span>
+                    </div>
+                </template>
             </div>
             
             <div class="flex justify-between items-center mb-4 text-lg font-bold">
@@ -771,11 +821,13 @@ function cashier() {
         },
 
         calculateTax() {
-            return this.calculateSubtotal() * (parseFloat(this.cart.taxRate) / 100);
+            const subtotal = this.calculateSubtotal();
+            return subtotal * (parseFloat(this.cart.taxRate) / 100);
         },
         
         calculateDiscount() {
-            return this.calculateSubtotal() * (parseFloat(this.cart.discountPercent) / 100);
+            const subtotal = this.calculateSubtotal();
+            return subtotal * (parseFloat(this.cart.discountPercent) / 100);
         },
 
         calculateTotal() {
@@ -783,6 +835,7 @@ function cashier() {
             const tax = this.calculateTax();
             const discount = this.calculateDiscount();
             
+            // Apply both tax and discount to the subtotal
             return Math.max(0, subtotal + tax - discount);
         },
 
