@@ -67,10 +67,14 @@ class MidtransController extends Controller
                 ];
             }
 
+            // Buat order_id unik dengan menambahkan timestamp untuk retries
+            // Format: invoice_number-timestamp
+            $uniqueOrderId = $transaction->invoice_number . '-' . time();
+
             // Data untuk Midtrans
             $params = [
                 'transaction_details' => [
-                    'order_id' => $transaction->invoice_number,
+                    'order_id' => $uniqueOrderId, // Gunakan order_id yang unik
                     'gross_amount' => (int) $transaction->final_amount,
                 ],
                 'item_details' => $items,
@@ -86,7 +90,11 @@ class MidtransController extends Controller
             // Buat token transaksi
             $snapToken = Snap::getSnapToken($params);
             
-            Log::info('Midtrans Token Generated', ['token' => $snapToken]);
+            Log::info('Midtrans Token Generated', [
+                'token' => $snapToken,
+                'original_order_id' => $transaction->invoice_number,
+                'new_order_id' => $uniqueOrderId
+            ]);
 
             // Return token ke client
             return response()->json([
@@ -120,11 +128,18 @@ class MidtransController extends Controller
             $fraudStatus = $notification->fraud_status;
             $paymentType = $notification->payment_type;
             
-            // Cari transaksi berdasarkan invoice number (order_id)
-            $transaction = Transaction::where('invoice_number', $orderId)->first();
+            // Cari transaksi berdasarkan invoice number dari order_id
+            // Untuk order_id yang telah dimodifikasi (ada "-" di dalamnya), ambil bagian pertama saja
+            $originalInvoiceNumber = strpos($orderId, '-') !== false ? 
+                strstr($orderId, '-', true) : $orderId;
+                
+            $transaction = Transaction::where('invoice_number', $originalInvoiceNumber)->first();
             
             if (!$transaction) {
-                Log::error('Midtrans Notification: Transaction not found', ['order_id' => $orderId]);
+                Log::error('Midtrans Notification: Transaction not found', [
+                    'order_id' => $orderId,
+                    'extracted_invoice' => $originalInvoiceNumber
+                ]);
                 return response()->json(['error' => 'Transaction not found'], 404);
             }
 
