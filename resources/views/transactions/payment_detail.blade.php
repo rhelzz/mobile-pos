@@ -196,39 +196,13 @@
             </a>
             @endif
             
-            <!-- Update Status Form with Better UX -->
-            <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div class="flex items-start mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                        <h4 class="font-medium text-sm text-yellow-800 mb-1">Pembayaran Menunggu</h4>
-                        <p class="text-xs text-yellow-700">Jika Anda sudah melakukan pembayaran tetapi status belum berubah, Anda dapat memperbarui status secara manual.</p>
-                    </div>
-                </div>
-                
-                <form action="{{ route('transactions.update-status', $transaction) }}" method="POST">
-                    @csrf
-                    <div class="flex space-x-2">
-                        <select name="status" class="flex-1 rounded-lg border-yellow-300 text-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200 bg-white">
-                            <option value="success">Pembayaran Berhasil</option>
-                            <option value="cancel">Batalkan Pembayaran</option>
-                        </select>
-                        <button type="submit" class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors">
-                            Update Status
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- Retry Payment Button -->
-                <button onclick="retryPayment('{{ $transaction->id }}')" class="flex items-center justify-center w-full mt-3 py-2 bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Coba Bayar Lagi
-                </button>
-            </div>
+            <!-- Retry Payment Button -->
+            <button onclick="retryPayment('{{ $transaction->id }}')" class="flex items-center justify-center w-full mt-4 py-3 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Coba Bayar Lagi
+            </button>
         @endif
         
         <!-- Success Button -->
